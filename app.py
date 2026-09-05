@@ -380,6 +380,27 @@ def process_pdf_bytes(pdf_bytes, address_lines, phone):
 
 st.set_page_config(page_title="Shipping Label Address Replacer", page_icon="📦", layout="centered")
 
+# ---- Simple password protection ----
+def check_password():
+    def password_entered():
+        if st.session_state.get("password_input") == st.secrets.get("app_password", ""):
+            st.session_state["password_correct"] = True
+            del st.session_state["password_input"]
+        else:
+            st.session_state["password_correct"] = False
+
+    if st.session_state.get("password_correct", False):
+        return True
+
+    st.title("🔒 Login")
+    st.text_input("Password", type="password", key="password_input", on_change=password_entered)
+    if "password_correct" in st.session_state and not st.session_state["password_correct"]:
+        st.error("Ghalat password. Dobara koshish karein.")
+    return False
+
+if not check_password():
+    st.stop()
+
 st.title("📦 Shipping Label Address Replacer")
 st.write("PDF shipping labels mein FROM (sender) address ko naye address se badlein - FedEx, UPS, aur Amazon-style labels sab support hain.")
 
